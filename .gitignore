@@ -1,0 +1,6 @@
+.classpath
+.project
+*.zip
+*.sha
+.idea
+target
