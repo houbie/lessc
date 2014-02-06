@@ -35,25 +35,19 @@ grails.project.dependency.resolution = {
         //mavenRepo "http://repository.jboss.com/maven2/"
     }
     dependencies {
-        compile 'com.github.houbie:lesscss:1.0.0-less-1.4.1-SNAPSHOT'
-        test 'org.gebish:geb-spock:0.9.2'
-        test "org.seleniumhq.selenium:selenium-firefox-driver:2.37.1"
-        test "org.seleniumhq.selenium:selenium-support:2.37.1"
+        compile('com.github.houbie:lesscss:1.0.0-less-1.4.1') {
+            excludes 'slf4j', 'logback-classic'
+        }
     }
 
     plugins {
         build(":release:3.0.1",
-                ":rest-client-builder:1.0.3",
                 ":tomcat:7.0.47") {
             export = false
         }
 
         compile(":resources:1.2.1")
 
-        test(":twitter-bootstrap:3.0.3",
-                ":spock:0.7",
-                ":geb:0.9.2") {
-            export = false
-        }
+        test(":twitter-bootstrap:3.0.3")
     }
 }
