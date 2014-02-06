@@ -13,8 +13,6 @@ eventPackagingEnd = {
             exit 1
         }
     }
-
-    println "eventPackagingEnd in ${System.currentTimeMillis() - start}"
 }
 
 eventRunAppStart = {

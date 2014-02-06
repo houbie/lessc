@@ -34,9 +34,11 @@ grails.project.dependency.resolution = {
         //mavenRepo "http://download.java.net/maven/2/"
         //mavenRepo "http://repository.jboss.com/maven2/"
     }
+
     dependencies {
+        build 'org.mozilla:rhino:1.7R4'
         compile('com.github.houbie:lesscss:1.0.0-less-1.4.1') {
-            excludes 'slf4j', 'logback-classic'
+            excludes 'slf4j', 'logback-classic', 'rhino'
         }
     }
 
