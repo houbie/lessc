@@ -58,6 +58,6 @@ class LesscConfig {
     }
 
     int getDaemonInterval() {
-        config.daemonInterval ? config.daemonInterval as Integer : 200
+        (config.daemonInterval ?: 200) as Integer
     }
 }

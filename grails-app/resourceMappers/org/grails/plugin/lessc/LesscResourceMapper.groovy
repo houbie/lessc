@@ -89,8 +89,8 @@ class LesscResourceMapper {
 
     private void watchResourceIfDevMode(ResourceMeta resourceMeta) {
         if (Environment.isDevelopmentMode()) {
-            def daemonInterval = grailsApplication.config.grails.resources.mappers.lessc.daemonInterval
-            if (daemonInterval) {
+            def daemonInterval = (grailsApplication.config.grails.resources.mappers.lessc.daemonInterval ?: 200) as Integer
+            if (daemonInterval > 0) {
                 resourceMetaMap[resourceMeta.sourceUrl] = resourceMeta
                 startWatchThread(daemonInterval)
             }
@@ -99,7 +99,7 @@ class LesscResourceMapper {
 
     private void startWatchThread(interval) {
         if (watchThread == null) {
-            log.info('starting Lessc watchThread')
+            log.info("starting Lessc watchThread with interval $interval")
             watchThread = Thread.startDaemon('LesscResourceMapperWatcher') {
                 while (true) {
                     try {

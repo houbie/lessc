@@ -36,9 +36,8 @@ grails.project.dependency.resolution = {
     }
 
     dependencies {
-        build 'org.mozilla:rhino:1.7R4'
-        compile('com.github.houbie:lesscss:1.0.0-less-1.4.1') {
-            excludes 'slf4j', 'logback-classic', 'rhino'
+        build('com.github.houbie:lesscss:1.0.0-less-1.4.1') {
+            excludes 'slf4j', 'logback-classic'
         }
     }
 

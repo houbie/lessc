@@ -22,7 +22,7 @@ log4j = {
 
     info 'org.grails.plugin.resource'
     info 'ResourcesGrailsPlugin'
-    debug 'org.grails.plugin.lessc.LesscResourceMapper'
+    info 'grails.app.resourceMappers.org.grails.plugin.lessc'
     info 'com.github.houbie.lesscss'
 }
 

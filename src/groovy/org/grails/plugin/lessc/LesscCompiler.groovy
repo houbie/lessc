@@ -41,7 +41,7 @@ class LesscCompiler implements CompilationListener {
 
 
     void startDaemon() {
-        if (lesscConfig.daemonInterval) {
+        if (lesscConfig.daemonInterval > 0) {
             if (fileResolver.modifiedLessFilesFile().exists()) {
                 fileResolver.modifiedLessFilesFile().delete()
             }

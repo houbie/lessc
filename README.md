@@ -91,7 +91,7 @@ Configuration typically resides in Config.groovy. All entries are optional.
                                              return new(less.tree.Dimension)(a.value + b.value);
                                           };'''
                     daemonInterval = 300 //interval in milliseconds used to check LESS files for changes (only in development mode)
-                                         //set to 0 to disable the daemon
+                                         //set to -1 to disable the daemon
                                          //default: 200
                     failOnError = false //exit when a compilation error is encountered, default: false
                     clientSideLess = false //when true, compile the LESS stylesheets in the browser with less-1.4.1.js, default: false
