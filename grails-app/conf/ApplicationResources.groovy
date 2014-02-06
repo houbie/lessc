@@ -7,8 +7,8 @@ modules = {
         dependsOn 'twitter-bootstrap'
         defaultBundle 'main'
         resource url: 'less/simple/main-color-green.less', bundle: 'main'
-        resource url: 'less/simple/main-background-color.less', bundle: 'main'
         resource url: 'css/main-margin.css'
+        resource url: 'less/simple/main-background-color.less', bundle: 'main'
     }
 
     mainCss {
@@ -18,9 +18,5 @@ modules = {
 
     withAttrs {
         resource url: 'less/simple/args-border.less', attrs: [type: 'css', rel: 'stylesheet/less'], bundle: 'main'
-    }
-
-    imported {
-        resource url: 'less/simple/main-imported.less'
     }
 }

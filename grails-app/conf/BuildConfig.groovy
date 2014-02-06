@@ -35,10 +35,10 @@ grails.project.dependency.resolution = {
         //mavenRepo "http://repository.jboss.com/maven2/"
     }
     dependencies {
-        compile 'com.github.houbie:lesscss:0.9.5-less-1.4.1-SNAPSHOT'
+        compile 'com.github.houbie:lesscss:1.0.0-less-1.4.1-SNAPSHOT'
         test 'org.gebish:geb-spock:0.9.2'
-        test "org.seleniumhq.selenium:selenium-support:«webdriver version»"
-        test "org.seleniumhq.selenium:selenium-firefox-driver:«webdriver version»"
+        test "org.seleniumhq.selenium:selenium-firefox-driver:2.37.1"
+        test "org.seleniumhq.selenium:selenium-support:2.37.1"
     }
 
     plugins {

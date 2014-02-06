@@ -10,7 +10,7 @@
 
 <body>
 <h1 class="simple">This should be green on a yellow background</h1>
-<p class="label-warning">Background should be blue</p>
+<p class="label-warning glyphicon-cloud ">Background should be blue</p>
 <r:layoutResources/>
 </body>
 </html>

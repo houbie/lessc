@@ -1,126 +1,120 @@
-Java LESS CSS compiler
-======================
+Grails LESS CSS compiler plugin
+================================
 
-Lesscss compiles LESS code into CSS stylesheets (see <http://lesscss.org>)
+Grails plugin that pre-compiles LESS code into CSS stylesheets (see <http://lesscss.org>)
 
-Lesscss is compatible with LESS version 1.4.1. In fact, Lesscss executes the official JavaScript LESS compiler in a JVM.
+This plugin is compatible with LESS version 1.4.1. In fact, it executes the official JavaScript LESS compiler in a JVM.
 
-In daemon mode, Lesscss monitors your LESS files (and all their imports), and automatically compiles them when necessary.
+In development mode, the plugin monitors your LESS files (and all their imports), and automatically compiles them when necessary.
 So you only need to save and refresh your browser.
 
-Lesscss can be used at the commandline, but it also provides a simple API for embedded usage in build tools.
+The LESS files are compiled at build time and packaged in the final WAR, hence there is no compilation in production mode.
 
 
-## Why yet another Java LESS compiler?
+## Why yet another LESS plugin?
 
-* Lesscss can start a daemon that automatically starts a compilation when the source is modified.
-* Lesscss caches information about imported source files so that an initial compilation to gather imports is rarely necessary.
-* Lesscss supports all options, which is not the case for the other Java implementations (at the time of writing).
-* Lesscss is up to 5 times faster then existing Java implementations.
+* Lessc has a daemon that automatically re-compiles when a source is modified.
+* Lessc caches information about imported source files so that an initial compilation to gather imports is rarely necessary.
+* When there is an error in a LESS file, Lessc shows an extract and the location of the error
+* Lessc supports all compilation options, which is not the case for the other plugins (at the time of writing).
+* Lessc uses a compiler that is up to 5 times faster then other Java implementations.
 
 
-## Download and installation
+## Installation
 
-Lesscss requires Java 1.6 or higher.
+For the time being, you have to build the plugin from source or use it as an inline plugin (in BuildConfig.groovy):
 
-You can download Lesscss from the [maven central repository](http://central.maven.org/maven2/com/github/houbie/lesscss/0.9.5-less-1.4.1/lesscss-0.9.5-less-1.4.1.zip)
-and un-zip it.
+    grails.plugin.location.lessc = '{pathTo}/lessc'
 
-Or you can declare it as dependency in your project:
+## Defining resources
 
-* Gradle, grab, grails, etc.: `build "com.github.houbie:lesscss:0.9.5-less-1.4.1"`
-* Maven:
+    modules = {
+    
+        'twitter-bootstrap' {
+            resource url: 'less/bootstrap.less'  //simplest form
+        }
+    
+        mainLess {
+            dependsOn 'twitter-bootstrap'
+            defaultBundle 'main'
+            //defaultBundle does not work for less resources; you need to specify the bundle explicitly for each less resource
+            resource url: 'less/simple/main-color-green.less', bundle: 'main'
+            resource url: 'less/simple/main-background-color.less', bundle: 'main'
+            resource url: 'css/main-margin.css'
+        }
+    
+    
+        //type and rel are optional, but if specified, they should be set to resp. 'css' and 'stylesheet/less'
+        withAttrs {
+            resource url: 'less/simple/args-border.less', attrs: [type: 'css', rel: 'stylesheet/less'], bundle: 'main'
+        }
+    }
 
-        <dependency>
-          <groupId>com.github.houbie</groupId>
-          <artifactId>lesscss</artifactId>
-          <version>0.9.5-less-1.4.1</version>
-        </dependency>
+## Configuration
 
-## Commandline usage
+Configuration typically resides in Config.groovy. All entries are optional.
 
-The zip distribution contains OS specific shell scripts that are compatible with the official lessc command.
-
-Just type `lessc source.less destination.css` to compile a LESS file.
-
-The complete syntax is `lessc [option option=parameter ...] <source> [destination]`
-
-Type `lessc -h` to see the full list of options.
+    grails.resources.debug = false //client side less compilation when set to true
+    grails {
+        resources {
+            mappers {
+                lessc {
+                    includes = ['less/bootstrap.less', 'less/simple/*.less'] //default: ['**/*.less']
+                    excludes = ['**/variables.less'] //default: []
+                    includePlugins = ['twitter-bootstrap'] //list of plugins to search for less files (using includes/excludes), default: []
+    
+                    //standard lessc compiler options,
+                    options {
+                        compress = true //Compress output by removing some whitespaces, default: false
+                        optimizationLevel = 1 //The lower the number, the fewer nodes created in the tree.
+                                              //Useful for debugging or if you need to access the individual nodes in the tree.
+                                              //default: 1
+     
+                        strictImports = false //Force evaluation of imports, default: false
+                        rootPath = '' //Set rootpath for URL rewriting in relative imports and URLs, default: ''
+                        relativeUrls = true //Re-write relative URLs to the base less file, default: true
+                        dumpLineNumbers = 'NONE' //Outputs filename and line numbers, possible values:
+                                                 // COMMENTS: output the debug info within comments.
+                                                 // MEDIA_QUERY: outputs the information within a fake media query which is compatible with the SASS format.
+                                                 // ALL: does both
+                                                 // default: NONE
+                        minify = false //minify generated CSS with YUI cssmin, default: false
+                        strictMath = false //Use strict math, default: false
+                        strictUnits = false //Use strict units, default: false
+                    }
+                    encoding = 'utf8' //Character encoding, default: null (system)
+     
+                    //define custom javascript functions that can be used inside LESS code
+                    //either a String, a java.util.File or a java.io.Reader
+                    //default: null
+                    customJavaScript = '''less.tree.functions.add = function (a, b) {
+                                             return new(less.tree.Dimension)(a.value + b.value);
+                                          };'''
+                    daemonInterval = 300 //interval in milliseconds used to check LESS files for changes (only in development mode)
+                                         //set to 0 to disable the daemon
+                                         //default: 200
+                    failOnError = false //exit when a compilation error is encountered, default: false
+                    clientSideLess = false //when true, compile the LESS stylesheets in the browser with less-1.4.1.js, default: false
+                }
+            }
+        }
+    }
 
 ### Tip for compiling Twitter Bootstrap
 
-When using Twitter Bootstrap in multiple projects, it is not necessary to copy all the LESS files to all the projects.
-Only copy the ones that you want to customize (typically variables.less), and then compile with:
+When using the Twitter Bootstrap grails plugin, it is not necessary to copy all the LESS files to your projects.
+Only copy the ones that you want to customize (typically variables.less). Only specify the LESS files that you actually
+use to prevent unnecessary compilation of imported LESS files:
 
-    lessc --include-path your/project/less:path/to/bootstrap-3.0.0/less bootstrap.less css/bootstrap.css
-
-This will first look for less files in _your/project/less_, and when not found it will fall back to _path/to/bootstrap-3.0.0/less_
-
-## Lesscss API
-
-You can create a `CompilationTask` instance to compile one or more LESS files (Groovy example):
-
-    CompilationUnit bootstrap= newCompilationUnit('less/bootstrap.less', 'css/bootstrap.css', new Options(), new FileSystemResourceReader(new File('less')))
-    CompilationUnit myLess= newCompilationUnit('src/myLess.less', 'css/myLess.css')
-    CompilationTask compilationTask = new CompilationTask(cacheDir: new File('/tmp'), compilationUnits: [bootstrap, myLess])
-    compilationTask.execute() //only once
-    compilationTask.startDaemon(100) //check every 100 milliseconds for changes
-    ...
-    compilationTask.stopDaemon()
-
-You can also use the LessCompiler directly (again Groovy):
-
-    //simple usage
-    new LessCompilerImpl().compile(new File('source'), new File('destination'))
-
-    //full option API
-    LessCompiler.CompilationDetails details= new LessCompilerImpl(new File('customJavaScriptFunctions.js').text).compileWithDetails(
-        new File('source.less').text,
-        new FileSystemResourceReader('importsDir'),
-        new Options(minify: true),
-        'source.less')
-
-    println details.result //generated CSS
-    println details.imports //list of imports encountered during compilation
-
-There are 3 _ResourceReader_ implementations available for resolving source and imported LESS files:
-
-* _FileSystemResourceReader_: search resources in one or more directories, ex. `new FileSystemResourceReader(new File('webapp/less'), new File('/bootstrap/less'))`
-* _ClasspathResourceReader_ : search resources in the classpath relative to a base path, ex. `new ClasspathResourceReader('bootstrap/less')`
-* _CombiningResourceReader_ : delegates to the ResourceReader's in an array until the resource is resolved, ex. `new CombiningResourceReader(srcResourceReader, jarResourceReader)`
+    includes = ['less/bootstrap.less']
+    includePlugins = ['twitter-bootstrap']
 
 ## Compatibility
 
-Lesscss passes all the tests of the official JavaScript LESS 1.4.1 compiler, except the test for _data-uri_.
-Lesscss handles _data-uri_ the same way as the official LESS does when used inside a browser: the _data-uri_'s are translated
+Lessc passes all the tests of the official JavaScript LESS 1.4.1 compiler, except the test for _data-uri_.
+Lessc handles _data-uri_ the same way as the official LESS does when used inside a browser: the _data-uri_'s are translated
 into URL's in stead of being embedded in the CSS.
 
-## Turn Lessc into a Porsche (experimental)
+## TODO
 
-When invoking lessc with the  _--engine jav8_ option, it will use a super fast embedded V8 JavaScript engine.
-
-**It can crash once in a while!**
-
-## Building from source
-If you use the included gradle wrapper, you don't have to install anything (except a JDK)
-
-    git clone https://github.com/houbie/lesscss.git
-    cd lesscss
-    ./gradlew installApp
-
-Or use gradle 1.8 or higher
-
-Useful gradle tasks:
-
-* _install_ : installs the lesscss jar into the local maven repo
-* _installApp_ : installs lesscss in _build/install/lesscss_
-* _distZip_ : creates the zip distribution
-* _clean_, _test_, _jar_, etc.
-
-## What's up next?
-
-A Grails plugin that monitors and automatically compiles the LESS sources in dev mode and packages the generated CSS in the war.
-
-## Wish list
-
-A stable embedded V8 engine.
+(Functional) tests
