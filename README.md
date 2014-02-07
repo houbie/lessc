@@ -54,7 +54,7 @@ For the time being, you have to build the plugin from source or use it as an inl
 
 Configuration typically resides in Config.groovy. All entries are optional.
 
-    grails.resources.debug = false //client side less compilation when set to true
+    grails.resources.debug = false //client side less compilation when set to true (see also clientSideLess)
     grails {
         resources {
             mappers {
@@ -66,14 +66,14 @@ Configuration typically resides in Config.groovy. All entries are optional.
                     //standard lessc compiler options,
                     options {
                         compress = true //Compress output by removing some whitespaces, default: false
-                        optimizationLevel = 1 //The lower the number, the fewer nodes created in the tree.
+                        optimizationLevel = 3 //The lower the number, the fewer nodes created in the tree.
                                               //Useful for debugging or if you need to access the individual nodes in the tree.
                                               //default: 1
      
                         strictImports = false //Force evaluation of imports, default: false
-                        rootPath = '' //Set rootpath for URL rewriting in relative imports and URLs, default: ''
+                        rootPath = 'http://myCDN.com' //Set rootpath for URL rewriting in relative imports and URLs, default: ''
                         relativeUrls = true //Re-write relative URLs to the base less file, default: true
-                        dumpLineNumbers = 'NONE' //Outputs filename and line numbers, possible values:
+                        dumpLineNumbers = 'COMMENTS' //Outputs filename and line numbers, possible values:
                                                  // COMMENTS: output the debug info within comments.
                                                  // MEDIA_QUERY: outputs the information within a fake media query which is compatible with the SASS format.
                                                  // ALL: does both
@@ -93,7 +93,7 @@ Configuration typically resides in Config.groovy. All entries are optional.
                     daemonInterval = 300 //interval in milliseconds used to check LESS files for changes (only in development mode)
                                          //set to -1 to disable the daemon
                                          //default: 200
-                    failOnError = false //exit when a compilation error is encountered, default: false
+                    failOnError = true //exit when a compilation error is encountered in the compilation phase, default: false
                     clientSideLess = false //when true, compile the LESS stylesheets in the browser with less-1.4.1.js, default: false
                 }
             }
@@ -104,7 +104,7 @@ Configuration typically resides in Config.groovy. All entries are optional.
 
 When using the Twitter Bootstrap grails plugin, it is not necessary to copy all the LESS files to your projects.
 Only copy the ones that you want to customize (typically variables.less). Only specify the LESS files that you actually
-use to prevent unnecessary compilation of imported LESS files:
+use to prevent unnecessary compilation of LESS files that are only imported:
 
     includes = ['less/bootstrap.less']
     includePlugins = ['twitter-bootstrap']
